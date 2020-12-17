@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center_horizontal|center_vertical"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    tools:ignore="Autofill,ContentDescription">
 
     <ImageView
         android:id="@+id/imageView"
@@ -36,50 +38,30 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayout2"
-        android:layout_width="0dp"
+    <EditText
+        android:id="@+id/editPrecoAlcool"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginLeft="32dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginRight="32dp"
+        android:layout_margin="32dp"
+        android:hint="Preço álcool ex: 1.90"
+        android:inputType="numberDecimal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView">
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/editPrecoAlcool"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Preço álcool ex: 1.90"
-            android:inputType="numberDecimal" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayout4"
-        android:layout_width="0dp"
+    <EditText
+        android:id="@+id/editPrecoGasolina"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginLeft="32dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="32dp"
-        android:layout_marginRight="32dp"
+        android:layout_margin="32dp"
+        android:hint="Preço gasolina ex: 2.60"
+        android:inputType="numberDecimal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout2">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/editPrecoGasolina"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Preço gasolina ex: 2.60"
-            android:inputType="numberDecimal" />
-    </com.google.android.material.textfield.TextInputLayout>
+        app:layout_constraintTop_toBottomOf="@+id/editPrecoAlcool" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/buttonResultado"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
@@ -87,11 +69,10 @@
         android:layout_marginTop="32dp"
         android:layout_marginEnd="32dp"
         android:layout_marginRight="32dp"
-        android:onClick="calcularPreco"
         android:text="Calcular"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout4" />
+        app:layout_constraintTop_toBottomOf="@+id/editPrecoGasolina" />
 
     <TextView
         android:id="@+id/textResultado"
@@ -108,5 +89,5 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button" />
+        app:layout_constraintTop_toBottomOf="@+id/buttonResultado" />
 </androidx.constraintlayout.widget.ConstraintLayout>
