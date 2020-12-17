@@ -1,20 +1,25 @@
 package com.ugps.alcoolougasolina;
 
 import android.annotation.SuppressLint;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
-    private EditText editPrecoAlcool, editPrecoGasolina;
+    private EditText editPrecoAlcool, editPrecoGasolina, editCaptcha;
     private TextView textResultado;
 
+    private final ANPServiceProvider anp = new ANPServiceProvider();
+    private ImageView captchaView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,12 +30,42 @@ public class MainActivity extends AppCompatActivity {
         editPrecoAlcool = findViewById(R.id.editPrecoAlcool);
         editPrecoGasolina = findViewById(R.id.editPrecoGasolina);
         textResultado = findViewById(R.id.textResultado);
+        captchaView = findViewById(R.id.imageCaptcha);
+        editCaptcha = findViewById(R.id.editCaptcha);
+
         Button buttonResultado = findViewById(R.id.buttonResultado);
 
         buttonResultado.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 calcularPreco();
+            }
+        });
+
+        final ImageButton captchaRefresh = findViewById(R.id.captchaRefresh);
+
+        captchaRefresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getCaptcha();
+            }
+        });
+
+        getCaptcha();
+    }
+
+    private void getCaptcha() {
+        editCaptcha.setError(null);
+
+        anp.getCaptcha(new ANPServiceProvider.Callback<Bitmap>() {
+            @Override
+            public void onResult(Bitmap data) {
+                captchaView.setImageBitmap(data);
+            }
+
+            @Override
+            public void onError(String error) {
+                editCaptcha.setError(error);
             }
         });
     }
