@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              tools:ignore="Autofill,ContentDescription">
+
+    <LinearLayout
+        android:id="@+id/captchaContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/imageCaptcha"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp" />
+
+        <EditText
+            android:id="@+id/editCaptcha"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:maxLength="5"
+            android:hint="Digite o código"
+            android:inputType="textCapCharacters" />
+
+        <ImageButton
+            android:id="@+id/captchaRefresh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:background="#00000000"
+            android:src="@android:drawable/ic_menu_rotate"
+            android:tint="@color/colorPrimary" />
+
+    </LinearLayout>
+
+    <Spinner android:id="@+id/selectEstados"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:visibility="gone" />
+
+    <Spinner android:id="@+id/selectMunicipios"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:visibility="gone" />
+
+</LinearLayout>
