@@ -1,27 +1,22 @@
 package com.ugps.alcoolougasolina;
 
 import android.annotation.SuppressLint;
-import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.text.Editable;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.ugps.alcoolougasolina.interfaces.Callback;
 import com.ugps.alcoolougasolina.interfaces.ErrorListener;
-import com.ugps.alcoolougasolina.models.OptionModel;
+import com.ugps.alcoolougasolina.models.EstadoModel;
 import com.ugps.alcoolougasolina.models.PrecosModel;
 import com.ugps.alcoolougasolina.services.ANPServiceProvider;
 import com.ugps.alcoolougasolina.utils.EditTextErrorListener;
-import com.ugps.alcoolougasolina.utils.SimpleTextWatcher;
+import com.ugps.alcoolougasolina.utils.OnItemSelectedListener;
+import com.ugps.alcoolougasolina.utils.SpinnerAdapter;
 
 import java.util.List;
 
@@ -30,16 +25,13 @@ import androidx.appcompat.app.AppCompatActivity;
 @SuppressLint("SetTextI18n") // remove warning de string hardcoded
 public class MainActivity extends AppCompatActivity {
 
-    private EditText editPrecoEtanol, editPrecoGasolina, editCaptcha;
+    private EditText editPrecoEtanol, editPrecoGasolina;
     private TextView textResultado;
-    private ImageView captchaView;
-    private View captchaContainer;
-    private ImageButton captchaRefresh;
     private Button buttonResultado;
 
     private Spinner selectEstados, selectMunicipios;
-    private ArrayAdapter<OptionModel<String>> adapterEstados;
-    private ArrayAdapter<OptionModel<PrecosModel>> adapterMunicipios;
+    private SpinnerAdapter<EstadoModel> adapterEstados;
+    private SpinnerAdapter<PrecosModel> adapterMunicipios;
 
     private final ANPServiceProvider anp = new ANPServiceProvider();
 
@@ -52,20 +44,14 @@ public class MainActivity extends AppCompatActivity {
         editPrecoEtanol = findViewById(R.id.editPrecoEtanol);
         editPrecoGasolina = findViewById(R.id.editPrecoGasolina);
         textResultado = findViewById(R.id.textResultado);
-        captchaContainer = findViewById(R.id.captchaContainer);
-        captchaView = findViewById(R.id.imageCaptcha);
-        editCaptcha = findViewById(R.id.editCaptcha);
-        captchaRefresh = findViewById(R.id.captchaRefresh);
         selectEstados = findViewById(R.id.selectEstados);
         selectMunicipios = findViewById(R.id.selectMunicipios);
         buttonResultado = findViewById(R.id.buttonResultado);
 
-        adapterEstados = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item);
-        adapterEstados.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapterEstados = new SpinnerAdapter<>(this);
         selectEstados.setAdapter(adapterEstados);
 
-        adapterMunicipios = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item);
-        adapterMunicipios.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        adapterMunicipios = new SpinnerAdapter<>(this);
         selectMunicipios.setAdapter(adapterMunicipios);
 
         bindListeners();
@@ -75,50 +61,26 @@ public class MainActivity extends AppCompatActivity {
 
     private void bindListeners() {
 
-        editCaptcha.addTextChangedListener(new SimpleTextWatcher() {
+        selectEstados.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
-            public void afterTextChanged(Editable editable) {
-                loadMunicipios();
+            public void onItemSelected(int position) {
+                if (position > 0) {
+                    loadMunicipios(adapterEstados.getItem(position).getId());
+                }
             }
         });
 
-        captchaRefresh.setOnClickListener(new View.OnClickListener() {
+        selectMunicipios.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
-            public void onClick(View view) {
-                // atualiza somente a imagem, se quisermos atualizar as letras
-                // temos que chamar loadEstados() para mudar os cookies
-                loadCaptcha();
-            }
-        });
-
-        selectEstados.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                loadMunicipios();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-                // do nothing
-            }
-        });
-
-        selectMunicipios.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int pos, long l) {
-                if (pos > 0) {
-                    PrecosModel precos = adapterMunicipios.getItem(pos).getValue();
+            public void onItemSelected(int position) {
+                if (position > 0) {
+                    PrecosModel precos = adapterMunicipios.getItem(position);
 
                     editPrecoGasolina.setText(String.valueOf(precos.getGasolina()));
                     editPrecoEtanol.setText(String.valueOf(precos.getEtanol()));
 
                     calcularPreco();
                 }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-                // do nothing
             }
         });
 
@@ -131,17 +93,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadEstados() {
-        anp.getEstados(new Callback<List<OptionModel<String>>>() {
+        anp.getEstados(new Callback<List<EstadoModel>>() {
             @Override
-            public void onResult(List<OptionModel<String>> options) {
-                adapterEstados.clear();
-                adapterEstados.addAll(options);
-                adapterEstados.notifyDataSetChanged();
+            public void onResult(List<EstadoModel> options) {
+                adapterEstados.setData(options);
 
                 selectEstados.setVisibility(View.VISIBLE);
-                captchaContainer.setVisibility(View.VISIBLE);
-
-                loadCaptcha();
             }
 
             @Override
@@ -151,51 +108,27 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void loadMunicipios() {
+    private void loadMunicipios(String estado) {
         textResultado.setText("");
+        editPrecoEtanol.setText("");
+        editPrecoGasolina.setText("");
 
-        int pos = selectEstados.getSelectedItemPosition();
+        textResultado.setText("Carregando municípios...");
 
-        if (pos > 0 && editCaptcha.length() == 5) {
-
-            textResultado.setText("Carregando municípios...");
-
-            String estado = adapterEstados.getItem(pos).getValue();
-            String captcha = editCaptcha.getText().toString().toUpperCase();
-
-            anp.getMunicipios(estado, captcha, new Callback<List<OptionModel<PrecosModel>>>() {
-                @Override
-                public void onResult(List<OptionModel<PrecosModel>> options) {
-                    adapterMunicipios.clear();
-                    adapterMunicipios.addAll(options);
-                    adapterMunicipios.notifyDataSetChanged();
-
-                    selectMunicipios.setSelection(0);
-                    selectMunicipios.setVisibility(View.VISIBLE);
-                    textResultado.setText("");
-                }
-
-                @Override
-                public void onError(String error) {
-                    textResultado.setText(error);
-                }
-            });
-        }
-    }
-
-    private void loadCaptcha() {
-        editCaptcha.setText("");
-        editCaptcha.setError(null);
-
-        anp.getCaptcha(new Callback<Bitmap>() {
+        anp.getMunicipios(estado, new Callback<List<PrecosModel>>() {
             @Override
-            public void onResult(Bitmap data) {
-                captchaView.setImageBitmap(data);
+            public void onResult(List<PrecosModel> options) {
+                adapterMunicipios.setData(options);
+
+                selectMunicipios.setSelection(0);
+                selectMunicipios.setVisibility(View.VISIBLE);
+
+                textResultado.setText("");
             }
 
             @Override
             public void onError(String error) {
-                editCaptcha.setError(error);
+                textResultado.setText(error);
             }
         });
     }

@@ -1,13 +1,10 @@
 package com.ugps.alcoolougasolina.services;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Handler;
 
 import com.ugps.alcoolougasolina.interfaces.Callback;
-import com.ugps.alcoolougasolina.models.OptionModel;
+import com.ugps.alcoolougasolina.models.EstadoModel;
 import com.ugps.alcoolougasolina.models.PrecosModel;
-import com.ugps.alcoolougasolina.utils.CookieJar;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -44,38 +41,12 @@ public class ANPServiceProvider {
 
     private final Map<String, String> formData = new HashMap<>();
 
-    public void getCaptcha(@NonNull final Callback<Bitmap> callback) {
-        new Thread(new Runnable() {
-            private Bitmap bitmap = null;
-
-            @Override
-            public void run() {
-                final ResponseBody body = request("http://preco.anp.gov.br/include/imagem.asp");
-                if (body != null) {
-                    bitmap = BitmapFactory.decodeStream(body.byteStream());
-                }
-
-                // dispatch to original thread
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (bitmap != null) {
-                            callback.onResult(bitmap);
-                        } else {
-                            callback.onError("Não foi possível carregar o captcha");
-                        }
-                    }
-                });
-            }
-        }).start();
-    }
-
-    public void getEstados(@NonNull final Callback<List<OptionModel<String>>> callback) {
+    public void getEstados(@NonNull final Callback<List<EstadoModel>> callback) {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                final ArrayList<OptionModel<String>> items = new ArrayList<>();
-                final ResponseBody body = request("http://preco.anp.gov.br/include/Resumo_Por_Estado_Index.asp");
+                final ArrayList<EstadoModel> items = new ArrayList<>();
+                final ResponseBody body = request("http://preco.anp.gov.br/include/Resumo_Por_Estado_Index.asp", null);
                 if (body != null) {
                     try {
                         Document document = Jsoup.parse(body.string());
@@ -86,7 +57,7 @@ public class ANPServiceProvider {
                                 .getElementsByTag("option");
 
                         for (Element option : options) {
-                            items.add(new OptionModel<>(option.val(), option.text()));
+                            items.add(new EstadoModel(option.val(), option.text()));
                         }
 
                         Elements hiddens = document
@@ -108,7 +79,7 @@ public class ANPServiceProvider {
                     @Override
                     public void run() {
                         if (!items.isEmpty()) {
-                            items.add(0, new OptionModel<>("", "Selecione um Estado"));
+                            items.add(0, new EstadoModel("", "Selecione um Estado"));
                             callback.onResult(items);
                         } else {
                             callback.onError("Não foi possível carregar os estados");
@@ -119,15 +90,14 @@ public class ANPServiceProvider {
         }).start();
     }
 
-    public void getMunicipios(@NonNull String estado, @NonNull String captcha, @NonNull final Callback<List<OptionModel<PrecosModel>>> callback) {
+    public void getMunicipios(@NonNull String estado, @NonNull final Callback<List<PrecosModel>> callback) {
 
         formData.put("selEstado", estado);
-        formData.put("txtValor", captcha);
 
         new Thread(new Runnable() {
             @Override
             public void run() {
-                final ArrayList<OptionModel<PrecosModel>> items = new ArrayList<>();
+                final ArrayList<PrecosModel> items = new ArrayList<>();
                 try {
                     Map<String, Double> precosGasolina = getPrecos(gasolinaId);
                     Map<String, Double> precosEtanol = getPrecos(etanolId);
@@ -139,7 +109,7 @@ public class ANPServiceProvider {
                         Double pEtanol = precosEtanol.get(cidade);
 
                         if (pGasolina != null && pEtanol != null) {
-                            items.add(new OptionModel<>(new PrecosModel(pGasolina, pEtanol), cidade));
+                            items.add(new PrecosModel(cidade, pGasolina, pEtanol));
                         }
                     }
 
@@ -152,8 +122,8 @@ public class ANPServiceProvider {
                     @Override
                     public void run() {
                         if (!items.isEmpty()) {
-                            PrecosModel stub = new PrecosModel(0, 0);
-                            items.add(0, new OptionModel<>(stub, "Selecione um Município"));
+                            PrecosModel placeholder = new PrecosModel("Selecione um Município", 0, 0);
+                            items.add(0, placeholder);
                             callback.onResult(items);
                         } else {
                             callback.onError("Não foi possível carregar os municípios");
@@ -191,11 +161,6 @@ public class ANPServiceProvider {
         }
 
         return cidadePreco;
-    }
-
-    @Nullable
-    private ResponseBody request(String url) {
-        return request(url, null);
     }
 
     @Nullable
