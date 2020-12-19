@@ -1,10 +1,9 @@
 package com.ugps.alcoolougasolina;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import okhttp3.Cookie;
 import okhttp3.HttpUrl;
 
@@ -12,13 +11,13 @@ public class CookieJar implements okhttp3.CookieJar {
     private List<Cookie> cookies;
 
     @Override
-    public void saveFromResponse(@NotNull HttpUrl httpUrl, @NotNull List<Cookie> cookies) {
+    public void saveFromResponse(@NonNull HttpUrl httpUrl, @NonNull List<Cookie> cookies) {
         this.cookies = cookies;
     }
 
-    @NotNull
+    @NonNull
     @Override
-    public List<Cookie> loadForRequest(@NotNull HttpUrl httpUrl) {
+    public List<Cookie> loadForRequest(@NonNull HttpUrl httpUrl) {
         return cookies != null ? cookies : new ArrayList<Cookie>();
     }
 }
