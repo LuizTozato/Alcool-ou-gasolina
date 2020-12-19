@@ -1,8 +1,13 @@
-package com.ugps.alcoolougasolina;
+package com.ugps.alcoolougasolina.services;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Handler;
+
+import com.ugps.alcoolougasolina.interfaces.Callback;
+import com.ugps.alcoolougasolina.models.OptionModel;
+import com.ugps.alcoolougasolina.models.PrecosModel;
+import com.ugps.alcoolougasolina.utils.CookieJar;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -14,7 +19,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 
@@ -24,7 +28,6 @@ import okhttp3.Call;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 
 public class ANPServiceProvider {
@@ -219,9 +222,4 @@ public class ANPServiceProvider {
         return null;
     }
 
-    interface Callback<T> {
-        void onResult(T data);
-
-        void onError(String error);
-    }
 }

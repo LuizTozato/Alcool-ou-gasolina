@@ -15,6 +15,14 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.ugps.alcoolougasolina.interfaces.Callback;
+import com.ugps.alcoolougasolina.interfaces.ErrorListener;
+import com.ugps.alcoolougasolina.models.OptionModel;
+import com.ugps.alcoolougasolina.models.PrecosModel;
+import com.ugps.alcoolougasolina.services.ANPServiceProvider;
+import com.ugps.alcoolougasolina.utils.EditTextErrorListener;
+import com.ugps.alcoolougasolina.utils.SimpleTextWatcher;
+
 import java.util.List;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -123,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadEstados() {
-        anp.getEstados(new ANPServiceProvider.Callback<List<OptionModel<String>>>() {
+        anp.getEstados(new Callback<List<OptionModel<String>>>() {
             @Override
             public void onResult(List<OptionModel<String>> options) {
                 adapterEstados.clear();
@@ -155,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
             String estado = adapterEstados.getItem(pos).getValue();
             String captcha = editCaptcha.getText().toString().toUpperCase();
 
-            anp.getMunicipios(estado, captcha, new ANPServiceProvider.Callback<List<OptionModel<PrecosModel>>>() {
+            anp.getMunicipios(estado, captcha, new Callback<List<OptionModel<PrecosModel>>>() {
                 @Override
                 public void onResult(List<OptionModel<PrecosModel>> options) {
                     adapterMunicipios.clear();
@@ -179,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
         editCaptcha.setText("");
         editCaptcha.setError(null);
 
-        anp.getCaptcha(new ANPServiceProvider.Callback<Bitmap>() {
+        anp.getCaptcha(new Callback<Bitmap>() {
             @Override
             public void onResult(Bitmap data) {
                 captchaView.setImageBitmap(data);

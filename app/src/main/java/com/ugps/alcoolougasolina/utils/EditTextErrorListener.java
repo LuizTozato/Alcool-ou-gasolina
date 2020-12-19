@@ -1,8 +1,10 @@
-package com.ugps.alcoolougasolina;
+package com.ugps.alcoolougasolina.utils;
 
 import android.widget.EditText;
 
-class EditTextErrorListener implements ErrorListener {
+import com.ugps.alcoolougasolina.interfaces.ErrorListener;
+
+public class EditTextErrorListener implements ErrorListener {
 
     private final EditText editText;
 

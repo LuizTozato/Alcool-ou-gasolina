@@ -1,4 +1,4 @@
-package com.ugps.alcoolougasolina;
+package com.ugps.alcoolougasolina.models;
 
 public class PrecosModel {
     private final double gasolina, etanol;

@@ -1,4 +1,4 @@
-package com.ugps.alcoolougasolina;
+package com.ugps.alcoolougasolina.utils;
 
 import android.text.TextWatcher;
 
