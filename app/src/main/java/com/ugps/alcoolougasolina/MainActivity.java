@@ -162,6 +162,7 @@ public class MainActivity extends AppCompatActivity {
                     adapterMunicipios.addAll(options);
                     adapterMunicipios.notifyDataSetChanged();
 
+                    selectMunicipios.setSelection(0);
                     selectMunicipios.setVisibility(View.VISIBLE);
                     textResultado.setText("");
                 }
