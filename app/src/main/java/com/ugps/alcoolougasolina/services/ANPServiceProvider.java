@@ -32,10 +32,9 @@ public class ANPServiceProvider {
     private static final String etanolId = "643*ETANOL@HIDRATADO";
 
     private final OkHttpClient.Builder builder = new OkHttpClient.Builder()
-            .callTimeout(3, TimeUnit.SECONDS)
-            .connectTimeout(3, TimeUnit.SECONDS)
-            .readTimeout(3, TimeUnit.SECONDS)
-            .cookieJar(new CookieJar());
+            .callTimeout(5, TimeUnit.SECONDS)
+            .connectTimeout(5, TimeUnit.SECONDS)
+            .readTimeout(5, TimeUnit.SECONDS);
 
     private final Handler handler = new Handler();
 
