@@ -77,6 +77,8 @@ public class MainActivity extends AppCompatActivity {
         captchaRefresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // atualiza somente a imagem, se quisermos atualizar as letras
+                // temos que chamar loadEstados() para mudar os cookies
                 loadCaptcha();
             }
         });
